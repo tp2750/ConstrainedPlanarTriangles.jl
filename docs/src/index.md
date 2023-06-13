@@ -33,6 +33,18 @@ Dict{Symbol, Vector{Union{Missing, Float64}}} with 2 entries:
   :Sides  => [missing, missing, missing]
   :Angles => [30.0, 60.0, 90.0]
 
+julia> triangle(;C = 90, a=3, b=4)
+Dict{Symbol, Vector{Union{Missing, Float64}}} with 2 entries:
+  :Sides  => [3.0, 4.0, 5.0]
+  :Angles => [36.8699, 53.1301, 90.0]
+
+julia> triangle(;A=60, B=60, c=10)
+[ Info: unknown side = 1, known side = 3
+[ Info: unknown side = 2, known side = 1
+Dict{Symbol, Vector{Union{Missing, Float64}}} with 2 entries:
+  :Sides  => [10.0, 10.0, 10.0]
+  :Angles => [60.0, 60.0, 60.0]
+
 ```
 
 
