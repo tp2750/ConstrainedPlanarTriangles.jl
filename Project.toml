@@ -3,6 +3,9 @@ uuid = "567645fb-30a2-4578-8938-98a93704a5c5"
 authors = ["Thomas Poulsen <ta.poulsen@gmail.com> and contributors"]
 version = "1.0.0-DEV"
 
+[deps]
+Missings = "e1d29d7a-bbdc-5cf2-9ac0-f12de2c33e28"
+
 [compat]
 julia = "1.6"
 

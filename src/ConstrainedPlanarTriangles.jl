@@ -1,5 +1,6 @@
 module ConstrainedPlanarTriangles
 
-# Write your package code here.
+include("draft.jl")
+export triangle
 
 end
