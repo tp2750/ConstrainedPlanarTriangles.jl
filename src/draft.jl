@@ -64,6 +64,7 @@ function triangle(;kwargs...)
         end
     end
     Dict(:Angles => angles, :Sides => sides)
+    Triangle(angles, sides)
 end
 
 function side_from_angles!(sides, angles, side_to_find, known_side)
