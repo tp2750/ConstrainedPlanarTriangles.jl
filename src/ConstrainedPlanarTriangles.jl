@@ -1,9 +1,12 @@
 module ConstrainedPlanarTriangles
 
-include("draft.jl")
-export triangle
+using Missings
+
+# include("draft.jl")
 
 include("structs.jl")
+export triangle, Triangle
+
 include("plot.jl")
 
 
