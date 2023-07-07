@@ -35,7 +35,7 @@ mk_pairs(x) = view.(Ref(x), (:).(1:length(x)-1,2:length(x))) ## from https://sta
         series_annotations := angle_ann
         markersize := 0
         frac = 0.01*(a+b+c)
-        x[1:3] .+ frac .* [1, -1, -1], y[1:3] .+ frac .* [1, -1, 1]
+        x[1:3] .+ frac .* [1, -1, -1], y[1:3] .+ frac .* [-1, 1, -1]
     end
     @series begin ## side names
         seriestype := :scatter
@@ -43,7 +43,7 @@ mk_pairs(x) = view.(Ref(x), (:).(1:length(x)-1,2:length(x))) ## from https://sta
         markersize := 0
         frac = 0.03
         x1 = mean.(mk_pairs(x)) 
-        y1 = mean.(mk_pairs(y)) .+ frac .* [-1, 1, -1]
+        y1 = mean.(mk_pairs(y)) .+ frac .* [-3, 3, 3]
         x1, y1
     end
 end
