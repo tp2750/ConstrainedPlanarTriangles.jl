@@ -19,6 +19,8 @@ function triangle(;kwargs...)
     haskey(kwargs,:a) && (sides[1] = kwargs[:a])
     haskey(kwargs,:b) && (sides[2] = kwargs[:b])
     haskey(kwargs,:c) && (sides[3] = kwargs[:c])
+    ## check consistencies
+    check_input(angles, sides)
     ## 2 angles determine the last
     missing_angles = findall(ismissing, angles)
     if length(missing_angles) == 1
@@ -42,7 +44,7 @@ function triangle(;kwargs...)
         side_to_find = findfirst(ismissing, sides)
         known_side = findfirst(!ismissing, sides)
         ## call with side_to_find, known_side and opposing angles
-        @info "unknown side = $side_to_find, known side = $known_side"
+        @debug "unknown side = $side_to_find, known side = $known_side"
         side_from_angles!(sides, angles, side_to_find, known_side)
         missing_sides = findall(ismissing, sides)        
     end
@@ -74,3 +76,28 @@ function angle_from_sides!(angles, sides, angleindex)
 end
     
 
+function check_input(angles, sides)
+    ## sum of angles <= 180    
+    if (anglesum = sum(skipmissing(angles))) > 180
+        error("sum of angles = $(anglesum) > 180")
+    end
+    ## if all angles, sum must be 180
+    if (sum(.!ismissing.(angles)) == 3) && (sum(angles) != 180)
+        error("all angles specified and sum of angles: $(sum(angles)) != 180")
+    end
+    ## trangle inequality
+    if (sum(.!ismissing.(sides)) == 3)
+        ssides = sort(sides)
+        if ssides[3] > (ssides[1] + ssides[2])
+            error("Triangle equality violated: $(ssides[3]) > $(ssides[1]) + $(ssides[2])")
+        end
+    end
+    ## degrees of freedom
+    constraints = min(2, sum(.!ismissing.(angles))) + sum(.!ismissing.(sides))
+    if constraints < 3
+        @warn("Underconstrained. Only $constraints constraints specified.")
+    end
+    if constraints > 3
+        @warn("Overconstrained: $constraints values specified.")
+    end
+end
