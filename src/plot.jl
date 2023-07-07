@@ -19,7 +19,7 @@ mk_pairs(x) = view.(Ref(x), (:).(1:length(x)-1,2:length(x))) ## from https://sta
     x = [0, c*cosd(A), b, 0]
     y = [0, c*sind(A), 0, 0]
     angle_ann = [@sprintf("A=%.2f",A), @sprintf("B=%.2f",B), @sprintf("C=%.2f",C)]
-    side_ann = [@sprintf("a=%.2f",a), @sprintf("b=%.2f",b), @sprintf("c=%.2f",c)]
+    side_ann = [@sprintf("c=%.2f",c), @sprintf("a=%.2f",a), @sprintf("b=%.2f",b)]
     @series begin
         seriestype := :path
         label := ""
