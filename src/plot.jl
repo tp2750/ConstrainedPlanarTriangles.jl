@@ -20,32 +20,30 @@ mk_pairs(x) = view.(Ref(x), (:).(1:length(x)-1,2:length(x))) ## from https://sta
     y = [0, c*sind(A), 0, 0]
     angle_ann = [@sprintf("A=%.2f",A), @sprintf("B=%.2f",B), @sprintf("C=%.2f",C)]
     side_ann = [@sprintf("c=%.2f",c), @sprintf("a=%.2f",a), @sprintf("b=%.2f",b)]
+    label := ""
+    aspect_ratio := :equal
     @series begin
         seriestype := :path
-        label := ""
         x, y
     end
     @series begin
         seriestype := :scatter
-        label := ""
         x, y
     end
     @series begin ## Angle names
         seriestype := :scatter
-        label := ""
         series_annotations := angle_ann
         markersize := 0
-        frac = 0.03
-        x[1:3] .+ frac .* [b, -b, -b], y[1:3] .+ frac .* [a, -a, a]
+        frac = 0.01*(a+b+c)
+        x[1:3] .+ frac .* [1, -1, -1], y[1:3] .+ frac .* [1, -1, 1]
     end
     @series begin ## side names
         seriestype := :scatter
-        label := ""
         series_annotations := side_ann
         markersize := 0
         frac = 0.03
         x1 = mean.(mk_pairs(x)) 
-        y1 = mean.(mk_pairs(y)) .+ frac .* [-a, a, -a]
+        y1 = mean.(mk_pairs(y)) .+ frac .* [-1, 1, -1]
         x1, y1
     end
 end
