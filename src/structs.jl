@@ -27,6 +27,8 @@ function triangle(;kwargs...)
         the_missing = first(missing_angles)
         angles[the_missing] = 180 - sum(angles[setdiff([1,2,3], [the_missing])])
     end
+    ## check again after infering all angles
+    check_input(angles, sides)
     ## 2 sides and enclosed angle determines the last: c² = a² + b² - 2ab cos(c)
     missing_sides = findall(ismissing, sides)
     if length(missing_sides) == 1
@@ -95,9 +97,20 @@ function check_input(angles, sides)
     ## degrees of freedom
     constraints = min(2, sum(.!ismissing.(angles))) + sum(.!ismissing.(sides))
     if constraints < 3
-        @warn("Underconstrained. Only $constraints constraints specified.")
+        @warn("Under specified. Only $constraints constraints specified.")
     end
     if constraints > 3
-        @warn("Overconstrained: $constraints values specified.")
+        @warn("Over specified: $constraints values specified.")
+    end
+    ## law of sines must hold for over-contrained
+    ## check again after infering all angles
+    both_known = .!ismissing.(angles) .& .!ismissing.(sides)
+    if sum(both_known) > 1
+        @info "over specified. Checking law of sines"
+        @info "Known pairs: $(A[both_known]), $(s[both_known])"
+    end
+    sine_check = sind.(angles) ./ sides
+    if !allequal(skipmissing(sine_check))
+        error( "Sine check failed: $sine_check")
     end
 end
