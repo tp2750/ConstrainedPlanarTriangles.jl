@@ -1,24 +1,12 @@
-using Missings
+mutable struct Triangle
+    Angles::Vector{Float64}
+    Sides::Vector{Float64}
+end
 
-# TODO:
-## DONE angle sum
-## DONE coside relations
-## DONE all sides determine all angles
-## DONE sine relations: given 2 angles and one opposing side, find other opposing side
-### this solves 3 angles + 1 side
-## plot
-## use and report heights
-## use and report area
-## parse kwargs in loop
-## update vectors in functions
-## call functions repeatedly until done or give up.
-### Needs to generate kwargs. See https://discourse.julialang.org/t/how-to-programmatically-generate-different-functions/78152 ?
-## inconsistent. eg triangle(a=1, b=2, c=4)
-## underdetermined
-## relative constrains. Eg B == C or A == B/2.
-### primitive Encode: [missing,1,1], [1,2,missing]
-### idea: string macro as positional argument: constraint"B == A/2, c == 2b"
-## circumscribed circle (radius R). Law of sines: a/sin(A) == b/sin(B) == c/sin(C) = 2R.  https://en.wikipedia.org/wiki/Law_of_sines
+function Triangle(;kwargs...)
+    t1 = triangle(;kwargs...)
+    Triangle(t1[:Angles], t1[:Sides])
+end
 
 function triangle(;kwargs...)
 #    @info kwargs
@@ -31,12 +19,16 @@ function triangle(;kwargs...)
     haskey(kwargs,:a) && (sides[1] = kwargs[:a])
     haskey(kwargs,:b) && (sides[2] = kwargs[:b])
     haskey(kwargs,:c) && (sides[3] = kwargs[:c])
+    ## check consistencies
+    check_input(angles, sides)
     ## 2 angles determine the last
     missing_angles = findall(ismissing, angles)
     if length(missing_angles) == 1
         the_missing = first(missing_angles)
         angles[the_missing] = 180 - sum(angles[setdiff([1,2,3], [the_missing])])
     end
+    ## check again after infering all angles
+    check_input(angles, sides)
     ## 2 sides and enclosed angle determines the last: c² = a² + b² - 2ab cos(c)
     missing_sides = findall(ismissing, sides)
     if length(missing_sides) == 1
@@ -54,7 +46,7 @@ function triangle(;kwargs...)
         side_to_find = findfirst(ismissing, sides)
         known_side = findfirst(!ismissing, sides)
         ## call with side_to_find, known_side and opposing angles
-        @info "unknown side = $side_to_find, known side = $known_side"
+        @debug "unknown side = $side_to_find, known side = $known_side"
         side_from_angles!(sides, angles, side_to_find, known_side)
         missing_sides = findall(ismissing, sides)        
     end
@@ -65,7 +57,6 @@ function triangle(;kwargs...)
         end
     end
     Dict(:Angles => angles, :Sides => sides)
-    Triangle(angles, sides)
 end
 
 function side_from_angles!(sides, angles, side_to_find, known_side)
@@ -86,3 +77,40 @@ function angle_from_sides!(angles, sides, angleindex)
     angles
 end
     
+
+function check_input(angles, sides)
+    ## sum of angles <= 180    
+    if (anglesum = sum(skipmissing(angles))) > 180
+        error("sum of angles = $(anglesum) > 180")
+    end
+    ## if all angles, sum must be 180
+    if (sum(.!ismissing.(angles)) == 3) && (sum(angles) != 180)
+        error("all angles specified and sum of angles: $(sum(angles)) != 180")
+    end
+    ## trangle inequality
+    if (sum(.!ismissing.(sides)) == 3)
+        ssides = sort(sides)
+        if ssides[3] > (ssides[1] + ssides[2])
+            error("Triangle equality violated: $(ssides[3]) > $(ssides[1]) + $(ssides[2])")
+        end
+    end
+    ## degrees of freedom
+    constraints = min(2, sum(.!ismissing.(angles))) + sum(.!ismissing.(sides))
+    if constraints < 3
+        @warn("Under specified. Only $constraints constraints specified.")
+    end
+    if constraints > 3
+        @warn("Over specified: $constraints values specified.")
+    end
+    ## law of sines must hold for over-contrained
+    ## check again after infering all angles
+    both_known = .!ismissing.(angles) .& .!ismissing.(sides)
+    if sum(both_known) > 1
+        @info "over specified. Checking law of sines"
+        @info "Known pairs: $(A[both_known]), $(s[both_known])"
+    end
+    sine_check = sind.(angles) ./ sides
+    if !allequal(skipmissing(sine_check))
+        error( "Sine check failed: $sine_check")
+    end
+end
