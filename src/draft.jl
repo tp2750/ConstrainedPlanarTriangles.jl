@@ -4,8 +4,9 @@ using Missings
 ## DONE angle sum
 ## DONE coside relations
 ## DONE all sides determine all angles
-## sine relations: given 2 angles and one opposing side, find other opposing side
+## DONE sine relations: given 2 angles and one opposing side, find other opposing side
 ### this solves 3 angles + 1 side
+## plot
 ## use and report heights
 ## use and report area
 ## parse kwargs in loop
